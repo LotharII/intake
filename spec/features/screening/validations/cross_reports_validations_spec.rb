@@ -30,7 +30,10 @@ feature 'Cross Reports Validations' do
           expect(page).not_to have_content('Please enter a cross-report date.')
           fill_in('Cross Reported on Date', with: '')
           expect(page).not_to have_content('Please enter a cross-report date.')
-          blur_field
+          20.times do
+            find_field('Cross Reported on Date').send_keys :backspace
+          end
+          blur_field 'Cross Reported on Date'
           expect(page).to have_content('Please enter a cross-report date.')
         end
       end

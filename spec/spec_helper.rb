@@ -71,7 +71,7 @@ RSpec.configure do |config|
   end
 
   config.around(:each, type: :feature) do |example|
-    WebMock.disable_net_connect!(allow_localhost: true)
+    WebMock.disable_net_connect!(allow: ['selenium'], allow_localhost: true)
     example.run
     WebMock.allow_net_connect!
   end

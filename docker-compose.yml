@@ -2,6 +2,10 @@ version: '2.1'
 # 6/23/2017 - version 3.x does not support extends yet.
 # - https://docs.docker.com/compose/extends/#extending-services
 services:
+  selenium:
+    extends:
+      file: ./docker/test/docker-compose.yml
+      service: selenium
   ca_intake:
     build: .
     command: ./bin/docker_start
@@ -25,6 +29,7 @@ services:
     links:
       - api
       - redis
+      - selenium
     tty: true
     stdin_open: true
   api:

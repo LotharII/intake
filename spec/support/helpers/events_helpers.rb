@@ -5,8 +5,12 @@ module EventsHelpers
     evaluate_script('document.activeElement')
   end
 
-  def blur_field
-    page.document.find('body').click
+  def blur_field(selector = nil)
+    if selector
+      find_field(selector).send_keys :tab
+    else
+      page.document.find('body').click
+    end
   end
 end
 

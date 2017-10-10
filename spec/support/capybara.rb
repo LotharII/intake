@@ -6,19 +6,14 @@ require 'capybara/accessible'
 require 'capybara/poltergeist'
 Capybara.raise_server_errors = false
 
-# Tests must be run in the correct timezone because
-# of UTC converstion and explicit expectations.
-# Sincerely,
-# The Time Lords
-ENV['TZ'] = 'Etc/GMT+7'
-
 Capybara.register_driver :accessible_selenium do |app|
   capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(
-    marionette: ENV['MARIONETTE'] == 'true'
+    executable_path: '/bin/run_firefox.sh',
   )
   driver = Capybara::Selenium::Driver.new(
     app,
-    browser: :firefox,
+    browser: :remote,
+    url: "http://selenium:4444/wd/hub",
     desired_capabilities: capabilities
   )
   adaptor = Capybara::Accessible::SeleniumDriverAdapter.new
@@ -34,6 +29,8 @@ end
 Capybara.default_driver = :accessible_selenium
 
 Capybara.server_port = 8889 + ENV['TEST_ENV_NUMBER'].to_i
+Capybara.server_host = '0.0.0.0'
+Capybara.app_host = "http://ca_intake_test:#{Capybara.server_port}"
 
 # Allow aria-label to be used in locators
 Capybara.enable_aria_label = true
@@ -58,6 +55,7 @@ Capybara::Accessible::Auditor::Node.class_eval do
     config.ignoreSelectors('badAriaAttributeValue', '[id$=_time_listbox]');
     config.ignoreSelectors('badAriaAttributeValue', '[id=spec_meta]');
     config.ignoreSelectors('badAriaAttributeValue', '[id=spec_meta]');
+    config.ignoreSelectors('badAriaAttributeValue', '[id^=allegations]');
     config.ignoreSelectors('badAriaAttributeValue', '[class^=Select]');
     config.ignoreSelectors('badAriaAttributeValue', 'option');
   IGNORES

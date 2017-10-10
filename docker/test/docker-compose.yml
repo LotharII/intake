@@ -1,6 +1,14 @@
 version: '2.1'
 
 services:
+  selenium:
+    build:
+      context: ../selenium/
+    shm_size: "2G" # https://github.com/SeleniumHQ/docker-selenium/issues/397
+    environment:
+      TZ: 'Etc/GMT+7'
+      NODE_MAX_SESSION: 5
+      NODE_MAX_INSTANCES: 10
   rspec_test:
     build:
       context: ../../
@@ -17,6 +25,7 @@ services:
       REDIS_PORT: 6379
     links:
       - redis
+      - selenium
   lint:
     build:
       context: ../../
