@@ -2,7 +2,7 @@ import React from 'react'
 import {shallow} from 'enzyme'
 import IncidentInformationShow from 'views/incidentInformation/IncidentInformationShow'
 
-fdescribe('IncidentInformationShow', () => {
+describe('IncidentInformationShow', () => {
   const renderIncidentInformationShow = (props) => (
     shallow(<IncidentInformationShow {...props}/>)
   )

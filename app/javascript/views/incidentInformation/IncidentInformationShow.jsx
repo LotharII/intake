@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import ShowField from 'common/ShowField'
 
-const IncidentInformationShow = ({incidentDate, incidentCounty, address, locationType}) => (
+const IncidentInformationShow = ({incidentDate, incidentCounty, address, locationType, errors}) => (
   <div className='card-body'>
     <div className='row'>
-      <ShowField gridClassName='col-md-6' label='Incident Date'>
+      <ShowField gridClassName='col-md-6' label='Incident Date' errors={errors.incident_date}>
         {incidentDate}
       </ShowField>
     </div>
@@ -52,7 +52,8 @@ IncidentInformationShow.defaultProps = {
     city: '',
     state: '',
     zip: '',
-  }
+  },
+  errors: [],
 }
 
 export default IncidentInformationShow
