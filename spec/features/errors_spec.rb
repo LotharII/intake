@@ -8,7 +8,9 @@ feature 'error pages' do
   around do |example|
     Rails.application.config.consider_all_requests_local = false
     Rails.application.config.action_dispatch.show_exceptions = true
-    example.run
+    with_config(dashboard_url: dashboard_url) do
+      example.run
+    end
     Rails.application.config.consider_all_requests_local = true
     Rails.application.config.action_dispatch.show_exceptions = false
   end
@@ -18,7 +20,6 @@ feature 'error pages' do
       if ENV.key?('TEST_ENV_NUMBER')
         skip 'Pending as this test fails during parallel runs'
       end
-      allow(Rails.configuration).to receive(:intake).and_return(dashboard_url: dashboard_url)
       stub_request(:get, '/this_page_does_not_exist').and_return(json_body('NotFound', status: 500))
       visit '/this_page_does_not_exist'
       expect(page).to have_text('Sorry, this is not the page you want.')
@@ -31,10 +32,8 @@ feature 'error pages' do
 
   context 'when user attempts to access a screening created by another' do
     scenario 'renders 401 page' do
-      pending 'implemented but fails due to lack of js redirect support'
       stub_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(1)))
         .and_return(json_body('Forbidden!!', status: 401))
-      allow(Rails.configuration).to receive(:intake).and_return(dashboard_url: dashboard_url)
       visit edit_screening_path(id: 1)
       expect(page).to have_current_path('/unauthorized')
       expect(page).to have_text('Sorry, you are restricted from accessing this page.')
