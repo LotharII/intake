@@ -19,7 +19,7 @@ Capybara.register_driver :accessible_selenium do |app|
   )
   driver = Capybara::Selenium::Driver.new(
     app,
-    browser: :firefox,
+    browser: :chrome,
     desired_capabilities: capabilities
   )
   adaptor = Capybara::Accessible::SeleniumDriverAdapter.new

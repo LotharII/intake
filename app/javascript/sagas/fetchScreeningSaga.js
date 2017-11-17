@@ -25,6 +25,10 @@ export function* fetchScreening({payload: {id}}) {
         yield put(replace('/unauthorized'))
         break
       }
+      case STATUS_CODES.notFound: {
+        yield put(replace('/notfound'))
+        break
+      }
       default: {
         yield put(fetchScreeningFailure(error.responseJSON))
       }

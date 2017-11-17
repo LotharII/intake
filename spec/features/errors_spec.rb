@@ -31,9 +31,9 @@ feature 'error pages' do
   end
 
   context 'when user attempts to access a screening created by another' do
-    scenario 'renders 401 page' do
+    scenario 'renders 403 page' do
       stub_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(1)))
-        .and_return(json_body('Forbidden!!', status: 401))
+        .and_return(json_body('Forbidden!!', status: 403))
       visit edit_screening_path(id: 1)
       expect(page).to have_current_path('/unauthorized')
       expect(page).to have_text('This page is restricted.')

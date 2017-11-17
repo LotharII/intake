@@ -68,5 +68,12 @@ describe('fetchScreening', () => {
       const error = {responseJSON: 'forbidden', status: 401}
       expect(gen.throw(error).value).toEqual(put(replace('/unauthorized')))
     })
+
+    it('redirects to not found page if error is 404', () => {
+      const gen = fetchScreening(action)
+      expect(gen.next().value).toEqual(call(get, '/api/v1/screenings/123'))
+      const error = {responseJSON: 'not found', status: 404}
+      expect(gen.throw(error).value).toEqual(put(replace('/notfound')))
+    })
   })
 })
