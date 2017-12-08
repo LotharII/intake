@@ -69,8 +69,8 @@ describe('historyOfInvolvementSelectors', () => {
       expect(getFormattedCasesSelector(state).getIn([0, 'parents'])).toEqual('')
     })
 
-    it('returns Sealed if the access indicator is R', () => {
-      const cases = [{access_limitation: {limited_access_code: 'R'}}]
+    it('returns Sealed if the access indicator is SEALED', () => {
+      const cases = [{access_limitation: {limited_access_code: 'SEALED'}}]
       const state = fromJS({involvements: {cases}})
       expect(getFormattedCasesSelector(state).getIn([0, 'restrictedAccessStatus'])).toEqual('Sealed')
     })
@@ -142,19 +142,19 @@ describe('historyOfInvolvementSelectors', () => {
     })
 
     it('includes the response time for a given referral in the status, if present', () => {
-      const referrals = [{response_time: 'Immediate'}]
+      const referrals = [{response_time: {id: '1518', description: 'Immediate'}}]
       const state = fromJS({involvements: {referrals}})
       expect(getFormattedReferralsSelector(state).getIn([0, 'status'])).toEqual('Open - Immediate')
     })
 
     it('returns a restrictedAccessStatus if one is present', () => {
-      const referrals = [{access_limitation: {limited_access_code: 'R'}}]
+      const referrals = [{access_limitation: {limited_access_code: 'SEALED'}}]
       const state = fromJS({involvements: {referrals}})
       expect(getFormattedReferralsSelector(state).getIn([0, 'notification'])).toEqual('Sealed')
     })
 
     it('returns the county name', () => {
-      const referrals = [{county_name: 'Yolo'}]
+      const referrals = [{county: {id: '1101', description: 'Yolo'}}]
       const state = fromJS({involvements: {referrals}})
       expect(getFormattedReferralsSelector(state).getIn([0, 'county'])).toEqual('Yolo')
     })
@@ -186,12 +186,10 @@ describe('historyOfInvolvementSelectors', () => {
     it('returns an object that includes a victim, a perpetrator, allegations, and a disposition', () => {
       const referrals = [{
         allegations: [{
-          victim_last_name: 'W.',
-          victim_first_name: 'Sharon',
-          perpetrator_last_name: 'W.',
-          perpetrator_first_name: 'Ricky',
-          disposition_description: 'Substantiated',
-          allegation_description: 'Sexual Abuse',
+          type: {id: '2179', description: 'Sexual Abuse'},
+          disposition: {id: '45', description: 'Substantiated'},
+          victim: {first_name: 'Sharon', last_name: 'W.'},
+          perpetrator: {first_name: 'Ricky', last_name: 'W.'},
         }],
       }]
       const state = fromJS({involvements: {referrals}})
