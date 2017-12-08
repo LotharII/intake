@@ -112,12 +112,13 @@ feature 'login' do
   scenario 'user uses session token when communicating to API' do
     Feature.run_with_activated(:authentication) do
       screening = FactoryGirl.create(:screening, name: 'My Screening')
-      stub_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(1)))
+      stub_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(screening.id)))
         .and_return(json_body(screening.to_json, status: 200))
       stub_request(:get, intake_api_url(ExternalRoutes.intake_api_screenings_path))
         .and_return(json_body([].to_json, status: 200))
       stub_request(:get, auth_validation_url)
         .and_return(json_body(auth_artifact.to_json, status: 200))
+      stub_empty_history_for_screening(screening)
 
       bobs_token = 'BOBS_TOKEN'
       Capybara.using_session(:bob) do
@@ -134,19 +135,19 @@ feature 'login' do
       end
 
       Capybara.using_session(:bob) do
-        visit screening_path(1)
+        visit screening_path(screening.id)
         expect(page).to have_content 'My Screening'
         expect(
-          a_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(1)))
+          a_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(screening.id)))
           .with(headers: { 'Authorization' => bobs_token })
         ).to have_been_made
       end
 
       Capybara.using_session(:alex) do
-        visit screening_path(1)
+        visit screening_path(screening.id)
         expect(page).to have_content 'My Screening'
         expect(
-          a_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(1)))
+          a_request(:get, intake_api_url(ExternalRoutes.intake_api_screening_path(screening.id)))
           .with(headers: { 'Authorization' => alexs_token })
         ).to have_been_made
       end
