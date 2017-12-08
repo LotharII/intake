@@ -272,6 +272,7 @@ feature 'Create participant' do
     end
 
     it 'hides the create new person button' do
+      stub_empty_history_for_screening(existing_screening)
       visit edit_screening_path(id: existing_screening.id)
       within '#search-card', text: 'Search' do
         fill_in_autocompleter 'Search for clients', with: 'Marge'
@@ -345,6 +346,7 @@ feature 'Create participant' do
   end
 
   scenario 'adding a participant from search on edit screening page' do
+    stub_empty_history_for_screening(existing_screening)
     visit edit_screening_path(id: existing_screening.id)
     homer_attributes = build_participant_from_person_and_screening(homer, existing_screening)
     participant_homer = FactoryGirl.build(:participant, homer_attributes)
@@ -436,6 +438,7 @@ feature 'Create participant' do
     context 'with NO privileges to add sensitive' do
       scenario 'cannot add sensitive' do
         Feature.run_with_activated(:authentication) do
+          stub_empty_history_for_screening(existing_screening)
           visit edit_screening_path(id: existing_screening.id, token: insensitive_token)
           sensitive_marge_attributes = build_participant_from_person_and_screening(
             marge,
@@ -466,6 +469,7 @@ feature 'Create participant' do
 
       scenario 'can add insensitive' do
         Feature.run_with_activated(:authentication) do
+          stub_empty_history_for_screening(existing_screening)
           visit edit_screening_path(id: existing_screening.id, token: insensitive_token)
           homer_attributes = build_participant_from_person_and_screening(
             homer,
@@ -500,6 +504,7 @@ feature 'Create participant' do
     context 'with privileges to add sensitive' do
       scenario 'can add sensitive person' do
         Feature.run_with_activated(:authentication) do
+          stub_empty_history_for_screening(existing_screening)
           visit edit_screening_path(id: existing_screening.id, token: sensitive_token)
           sensitive_marge_attributes = build_participant_from_person_and_screening(
             marge,
@@ -547,6 +552,7 @@ feature 'Create participant' do
       end
       scenario 'can add sensitive person' do
         Feature.run_with_activated(:authentication) do
+          stub_empty_history_for_screening(existing_screening)
           visit edit_screening_path(id: existing_screening.id, token: sensitive_token)
           homer_attributes = build_participant_from_person_and_screening(
             homer,
@@ -586,6 +592,7 @@ feature 'Create participant' do
     end
 
     scenario 'creating a participant from search adds participant in show mode' do
+      stub_empty_history_for_screening(existing_screening)
       visit edit_screening_path(id: existing_screening.id)
       homer_attributes = build_participant_from_person_and_screening(homer, existing_screening)
       participant_homer = FactoryGirl.build(:participant, homer_attributes)
