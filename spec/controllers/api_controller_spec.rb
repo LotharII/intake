@@ -20,7 +20,14 @@ describe ApiController do
       'error' => 'api_error',
       'status' => 'N/A',
       'message' => 'execution expired',
-      'api_response_body' => 'N/A',
+      'api_response_body' => {
+        'issue_details' => [{
+          'incident_id' => anything,
+          'status' => anything,
+          'type' => 'api_error',
+          'response_body' => 'N/A'
+        }]
+      },
       'method' => 'get',
       'url' => '/some_test_path'
     )
@@ -38,7 +45,14 @@ describe ApiController do
       'error' => 'api_error',
       'status' => 500,
       'message' => 'Error while calling /some_test_path',
-      'api_response_body' => 'this is not json',
+      'api_response_body' => {
+        'issue_details' => [{
+          'incident_id' => anything,
+          'status' => anything,
+          'type' => 'api_error',
+          'response_body' => 'this is not json'
+        }]
+      },
       'method' => 'get',
       'url' => '/some_test_path'
     )

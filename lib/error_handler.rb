@@ -9,6 +9,8 @@ module ErrorHandler
   end
 
   def handle_exception(exception)
+    exception = add_issue_details(exception)
+
     case exception
     when ApiError
       log_error(exception, 'API_ERROR')
@@ -17,6 +19,36 @@ module ErrorHandler
       log_error(exception, 'STANDARD_ERROR')
       render json: generate_standard_error(exception), status: 500
     end
+  end
+
+  def add_issue_details(exception)
+    if get_issue_details(exception).empty?
+      exception.api_error[:response_body] = generate_isssue_details(exception)
+    end
+    exception
+  end
+
+  def generate_isssue_details(exception)
+    {
+      'issue_details': [{
+        'incident_id': SecureRandom.uuid,
+        'status': exception.api_error[:http_code],
+        'type': exception.class.name.underscore,
+        'response_body': exception.api_error[:response_body]
+      }]
+    }.as_json
+  end
+
+  def get_issue_details(exception)
+    if api_response_body(exception.api_error[:response_body]).try(:key?, 'issue_details')
+      api_response_body(exception.api_error[:response_body])['issue_details']
+    else
+      []
+    end
+  end
+
+  def get_incident_ids(exception)
+    get_issue_details(exception).collect { |issue_detail| issue_detail['incident_id'] }
   end
 
   def generate_api_error(exception)
@@ -41,15 +73,20 @@ module ErrorHandler
 
   def log_error(exception, type)
     if type == 'API_ERROR'
-      Rails.logger.error "[#{type}] found processing an api call:
-      - message: #{exception.message}
-      - URL    : #{exception.api_error[:url]}
-      - status : #{exception.api_error[:http_code]}
-      - method : #{exception.api_error[:method]}"
+      Rails.logger.error api_error_message(exception, type)
     else
-      Rails.logger.error " [#{type}] found processing an api call:
+      Rails.logger.error "[#{type}] found processing an api call:
       - message: #{exception.message}\n      - backtrace: #{exception.backtrace}"
     end
+  end
+
+  def api_error_message(exception, type)
+    "[#{type}] found processing an api call:
+    - incident_ids: #{get_incident_ids(exception).join(', ')}}
+    - message: #{exception.message}
+    - URL    : #{exception.api_error[:url]}
+    - status : #{exception.api_error[:http_code]}
+    - method : #{exception.api_error[:method]}"
   end
 
   private

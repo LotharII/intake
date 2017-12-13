@@ -13,6 +13,47 @@ describe ErrorHandler do
       end
     end
 
+    it 'add isssue_details to response_body' do
+      foo = Foo.new
+
+      begin
+        raise ApiError, {}
+      rescue ApiError => e
+        resp = foo.add_issue_details(e)
+      end
+
+      expect(resp.api_error[:response_body]).to match a_hash_including('issue_details' => [{
+                                                                         'incident_id' => anything,
+                                                                         'status' => anything,
+                                                                         'type' => 'api_error',
+                                                                         'response_body' => anything
+                                                                       }])
+    end
+
+    it 'returns a string of incident ids' do
+      foo = Foo.new
+
+      begin
+        raise ApiError, {}
+      rescue ApiError => exception
+        exception = foo.add_issue_details(exception)
+        incident_ids = foo.get_incident_ids(exception)
+      end
+
+      expect(incident_ids).not_to be_empty
+    end
+
+    it 'log incident ids' do
+      foo = Foo.new
+
+      begin
+        raise ApiError, {}
+      rescue ApiError => exception
+        expect(Rails.logger).to receive(:error).with(foo.api_error_message(exception, 'API_ERROR'))
+        foo.log_error(exception, 'API_ERROR')
+      end
+    end
+
     it 'handles StandardError and returns a custom JSON message' do
       foo = Foo.new
 
