@@ -7,7 +7,7 @@ export function* fetchScreenings() {
     const response = yield call(get, '/api/v1/screenings')
     yield put(fetchSuccess(response))
   } catch (error) {
-    yield put(fetchFailure(error))
+    yield put(fetchFailure(error.responseJSON))
   }
 }
 

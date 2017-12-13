@@ -19,10 +19,10 @@ describe('fetchScreenings', () => {
     expect(gen.next(screenings).value).toEqual(put(fetchSuccess(screenings)))
   })
 
-  it('puts errors when errors are thrown', () => {
-    const error = 'some error'
+  it('returns error.responseJSON when errors are thrown', () => {
+    const error = {responseJSON: 'some error'}
     const gen = fetchScreenings()
     expect(gen.next().value).toEqual(call(get, '/api/v1/screenings'))
-    expect(gen.throw(error).value).toEqual(put(fetchFailure('some error')))
+    expect(gen.throw(error).value).toEqual(put(fetchFailure(error.responseJSON)))
   })
 })
