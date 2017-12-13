@@ -46,7 +46,7 @@ feature 'History card' do
           assigned_social_worker: { id: 'wrk1234', first_name: 'Bob', last_name: 'Smith' },
           reporter: { id: 'rpt1234', first_name: 'Alex', last_name: 'Hanson' },
           all_people: [
-            { first_name: 'Bob', last_name: 'Bob Smith', roles: ['Assigned Social Worker'] },
+            { first_name: 'Bob', last_name: 'Smith', roles: ['Assigned Social Worker'] },
             { first_name: 'Alex', last_name: 'Hanson', roles: ['Reporter'] },
             { first_name: 'Sally', last_name: 'Johnson', roles: ['Victim'] },
             { first_name: 'Sam', last_name: 'Anderson', roles: ['Perpetrator'] },
@@ -91,7 +91,7 @@ feature 'History card' do
           },
           allegations: [
             {
-              description: 'General Neglect',
+              type: { description: 'General Neglect' },
               disposition: {
                 id: '45',
                 description: 'Entered in Error'
@@ -129,7 +129,7 @@ feature 'History card' do
           },
           allegations: [
             {
-              description: 'Severe Neglect',
+              type: { description: 'Severe Neglect' },
               victim: {
                 first_name: 'Victim2',
                 last_name: 'v2LastName'
@@ -144,7 +144,7 @@ feature 'History card' do
             legacy_ui_id: '0202-9769-1248-2000283'
           },
           access_limitation: {
-            limited_access_code: 'SENSETIVE'
+            limited_access_code: 'SENSITIVE'
           }
         }
       ]
@@ -253,7 +253,6 @@ feature 'History card' do
     end
 
     before do
-      pending 'Completion of HOI frontend'
       existing_screening.participants = [FactoryGirl.create(:participant)]
 
       stub_request(
@@ -262,8 +261,8 @@ feature 'History card' do
 
       stub_request(
         :get,
-        intake_api_url(
-          ExternalRoutes.intake_api_history_of_involvements_path(existing_screening.id)
+        ferb_api_url(
+          ExternalRoutes.ferb_api_screening_history_of_involvements_path(existing_screening.id)
         )
       ).and_return(json_body(screening_involvement.to_json, status: 200))
       stub_empty_relationships_for_screening(existing_screening)
@@ -412,8 +411,8 @@ feature 'History card' do
       expect(
         a_request(
           :get,
-          intake_api_url(
-            ExternalRoutes.intake_api_history_of_involvements_path(existing_screening.id)
+          ferb_api_url(
+            ExternalRoutes.ferb_api_screening_history_of_involvements_path(existing_screening.id)
           )
         )
       ).to have_been_made
@@ -425,8 +424,8 @@ feature 'History card' do
       expect(
         a_request(
           :get,
-          intake_api_url(
-            ExternalRoutes.intake_api_history_of_involvements_path(existing_screening.id)
+          ferb_api_url(
+            ExternalRoutes.ferb_api_screening_history_of_involvements_path(existing_screening.id)
           )
         )
       ).to have_been_made
@@ -560,8 +559,8 @@ feature 'History card' do
         expect(
           a_request(
             :get,
-            intake_api_url(
-              ExternalRoutes.intake_api_history_of_involvements_path(existing_screening.id)
+            ferb_api_url(
+              ExternalRoutes.ferb_api_screening_history_of_involvements_path(existing_screening.id)
             )
           )
         ).to have_been_made
