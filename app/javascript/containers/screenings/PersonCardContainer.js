@@ -7,6 +7,7 @@ import {
   getPersonInformationFlagValuesSelector,
 } from 'selectors/screening/personCardSelectors'
 import {savePerson, deletePerson} from 'actions/personCardActions'
+import {touchField} from 'actions/peopleFormActions'
 import {setPersonCardMode} from 'actions/screeningPageActions'
 
 const mapStateToProps = (state, {personId}) => ({
@@ -36,6 +37,7 @@ const mergeProps = (stateProps, {dispatch}, ownProps) => {
   const onSave = () => {
     dispatch(savePerson(personWithEdits))
     dispatch(setPersonCardMode(personId, 'show'))
+    dispatch(touchField(personId, ['ssn']))
   }
 
   return {

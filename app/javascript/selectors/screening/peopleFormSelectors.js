@@ -5,7 +5,10 @@ import LANGUAGES from 'enums/Languages'
 import {createSelector} from 'reselect'
 import {fromJS, List, Map} from 'immutable'
 import {ROLE_TYPE_NON_REPORTER, ROLE_TYPE_REPORTER} from 'enums/RoleType'
+import {combineCompact} from 'utils/validator'
 
+const VALID_SSN_LENGTH = 9
+const ONE = 1
 const formatEnums = (enumObject) =>
   Object.keys(enumObject).map((item) => ({label: enumObject[item], value: item}))
 
@@ -163,4 +166,83 @@ export const getIsRaceIndeterminateValueSelector = (state, personId) => {
     state.getIn(['peopleForm', personId, 'races', 'Declined to answer', 'value'])
 
   return Boolean(isUnknown || isAbandoned || isDeclinedToAnswer)
+}
+export const getErrorsForPersonSelector = (state, personId) => {
+  const ssn = state.getIn(['peopleForm', personId, 'ssn', 'value']) || ''
+  return fromJS({
+    ssn: combineCompact(
+      () => {
+        const ssnWithoutHyphens = ssn.replace('-', '')
+        if (ssnWithoutHyphens.length > ONE && ssnWithoutHyphens < VALID_SSN_LENGTH) {
+          return 'Social security number must be 9 digits long'
+        } else {
+          return undefined
+        }
+      },
+      () => {
+        if (ssn && ssn.startsWith('9')) {
+          return 'Social security number cannot begin with 9'
+        } else {
+          return undefined
+        }
+      },
+    )
+  })
+}
+        // if (ssn) {
+          // const ssnSplits = ssn.split('-')
+          // if (ssnSplits.length === ONE && ssn.length < SSN_LENGTH) {
+            // return 'Social security number must be 9 digits long.'
+          // }
+          // if (ssn.startsWith('666')) {
+            // return 'Social security number cannot begin with 666.'
+          // }
+          // if (ssn.startsWith('9')) {
+            // return 'Social security number cannot begin with 9.'
+          // }
+          // if (ssnSplits.length > ONE) {
+            // if (ssn.length < SSN_LENGTH_WITH_DASHES) {
+              // return 'Social security number must be 11 digits long.'
+            // }
+            // let validSSN = true
+            // for (let splitIndex = 0; splitIndex < ssnSplits.length; splitIndex++) {
+              // if (validSSN) {
+                // const ssnSplit = ssnSplits[splitIndex]
+                // let zeroCount = 0
+                // for (let index = 0; index < ssnSplit.length; index++) {
+                  // if (ssnSplit.charAt(index) === '0') {
+                    // zeroCount++
+                  // }
+                // }
+                // if (zeroCount === (ssnSplit.length)) {
+                  // validSSN = false
+                // }
+              // }
+            // }
+            // if (!validSSN) {
+              // return 'Social security number cannot contain all 0s in a group.'
+            // }
+          // }
+        // }
+        // return undefined
+      // }
+
+export const getTouchedFieldsForPersonSelector = (state, personId) => {
+  const peopleForm = state.getIn(['peopleForm', personId], Map())
+  return peopleForm.filter((field) => field.get('touched')).keySeq().toList()
+}
+
+export const getVisibleErrorsForPersonSelector = (state, personId) => {
+  const touchedFields = getTouchedFieldsForPersonSelector(state, personId)
+  const errors = getErrorsForPersonSelector(state, personId)
+  return errors.reduce(
+    (filteredErrors, fieldErrors, field) => {
+      if (touchedFields.includes(field)) {
+        return filteredErrors.set(field, fieldErrors)
+      } else {
+        return filteredErrors.set(field, List())
+      }
+    },
+    Map()
+  )
 }

@@ -1,4 +1,4 @@
-import {fromJS, Map} from 'immutable'
+import {fromJS, Map, List} from 'immutable'
 import {
   getFilteredPersonRolesSelector,
   getPeopleWithEditsSelector,
@@ -19,6 +19,9 @@ import {
   getEthnicityDetailOptionsSelector,
   getPersonEthnicityDetaiValueSelector,
   getIsRaceIndeterminateValueSelector,
+  getTouchedFieldsForPersonSelector,
+  getErrorsForPersonSelector,
+  getVisibleErrorsForPersonSelector,
 } from 'selectors/screening/peopleFormSelectors'
 import * as matchers from 'jasmine-immutable-matchers'
 
@@ -62,7 +65,7 @@ describe('peopleFormSelectors', () => {
             },
           ],
           roles: {value: ['a', 'b']},
-          ssn: {value: '123'},
+          ssn: {value: '321456789'},
           sensitive: {value: true},
           sealed: {value: true},
           ethnicity: {
@@ -96,7 +99,7 @@ describe('peopleFormSelectors', () => {
             type: {value: null},
           }],
           roles: {value: ['c']},
-          ssn: {value: '321'},
+          ssn: {value: '321456789'},
           sensitive: {value: false},
           sealed: {value: false},
           ethnicity: {
@@ -161,7 +164,7 @@ describe('peopleFormSelectors', () => {
             {id: null, street_address: '9674 Somewhere Street', city: 'Nowhereville', state: 'CA', zip: '55555', type: 'Cell'},
           ],
           roles: ['a', 'b'],
-          ssn: '123',
+          ssn: '321456789',
           sensitive: true,
           sealed: true,
           ethnicity: {
@@ -188,7 +191,7 @@ describe('peopleFormSelectors', () => {
           phone_numbers: [{id: null, number: null, type: null}],
           addresses: [{id: null, street_address: null, city: null, state: null, zip: null, type: null}],
           roles: ['c'],
-          ssn: '321',
+          ssn: '321456789',
           sensitive: false,
           sealed: false,
           ethnicity: {
@@ -660,5 +663,69 @@ describe('peopleFormSelectors', () => {
       expect(getIsRaceIndeterminateValueSelector(state, 'one')).toEqual(true)
       expect(getIsRaceIndeterminateValueSelector(state, 'two')).toEqual(false)
     })
+  })
+
+  describe('getErrorsForPersonSelector', () => {
+    it('Social security number must be 9 digits long', () => {
+      const peopleForm = {one: {ssn: {value: '88756123'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number must be 9 digits long.']))
+    })
+    it('Social security number cannot begin with 9.', () => {
+      const peopleForm = {one: {ssn: {value: '987561234'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number cannot begin with 9.']))
+    })
+    it('Social security number cannot begin with 666.', () => {
+      const peopleForm = {one: {ssn: {value: '666561234'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number cannot begin with 666.']))
+    })
+    it('valid SSN', () => {
+      const peopleForm = {one: {ssn: {value: '767561234'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List())
+    })
+    it('valid SSN with dashes', () => {
+      const peopleForm = {one: {ssn: {value: '323-56-4321'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List())
+    })
+    it('Social security number must be 11 digits long', () => {
+      const peopleForm = {one: {ssn: {value: '887-56-123'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number must be 11 digits long.']))
+    })
+    it('Social security number cannot contain all 0s in a group', () => {
+      const peopleForm = {one: {ssn: {value: '000-56-1234'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number cannot contain all 0s in a group.']))
+    })
+    it('Social security number cannot contain all 0s in second group', () => {
+      const peopleForm = {one: {ssn: {value: '768-00-1234'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number cannot contain all 0s in a group.']))
+    })
+    it('Social security number cannot contain all 0s in third group', () => {
+      const peopleForm = {one: {ssn: {value: '768-56-0000'}}}
+      const state = fromJS({peopleForm})
+      expect(getErrorsForPersonSelector(state, 'one').get('ssn'))
+        .toEqualImmutable(List(['Social security number cannot contain all 0s in a group.']))
+    })
+  })
+
+  describe('getTouchedFieldsForPersonSelector', () => {
+    it('')
+  })
+
+  describe('getVisibleErrorsForPersonSelector', () => {
   })
 })
