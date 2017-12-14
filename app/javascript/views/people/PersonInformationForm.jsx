@@ -6,6 +6,7 @@ import SelectField from 'common/SelectField'
 import MaskedInputField from 'common/MaskedInputField'
 
 const PersonInformationForm = ({
+  errors,
   firstName,
   lastName,
   legacySourceDescription,
@@ -17,6 +18,7 @@ const PersonInformationForm = ({
   roles,
   ssn,
   onChange,
+  onBlur,
 }) => (
   <div>
     {
@@ -86,18 +88,22 @@ const PersonInformationForm = ({
         mask='111-11-1111'
         placeholder='___-__-____'
         value={ssn || ''}
+        onBlur={() => onBlur('ssn')}
         onChange={({target: {value}}) => onChange('ssn', value)}
+        errors={errors.ssn}
       />
     </div>
   </div>
 )
 PersonInformationForm.propTypes = {
+  errors: PropTypes.object,
   firstName: PropTypes.string,
   lastName: PropTypes.string,
   legacySourceDescription: PropTypes.string,
   middleName: PropTypes.string,
   nameSuffix: PropTypes.string,
   nameSuffixOptions: PropTypes.array,
+  onBlur: PropTypes.func,
   onChange: PropTypes.func,
   personId: PropTypes.string.isRequired,
   roleOptions: PropTypes.array,

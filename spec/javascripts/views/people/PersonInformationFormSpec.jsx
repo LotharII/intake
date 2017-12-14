@@ -3,32 +3,8 @@ import React from 'react'
 import {shallow} from 'enzyme'
 
 describe('PersonInformationForm', () => {
-  function renderPersonForm({
-    personId = '123',
-    roles,
-    roleOptions,
-    legacySourceDescription,
-    firstName,
-    middleName,
-    lastName,
-    nameSuffix,
-    nameSuffixOptions = [],
-    ssn,
-    onChange,
-  }) {
-    const props = {
-      personId,
-      roles,
-      roleOptions,
-      legacySourceDescription,
-      firstName,
-      middleName,
-      lastName,
-      nameSuffix,
-      nameSuffixOptions,
-      ssn,
-      onChange,
-    }
+  function renderPersonForm({personId = '123', nameSuffixOptions = [], errors = {}, ...args}) {
+    const props = {personId, nameSuffixOptions, errors, ...args}
     return shallow(<PersonInformationForm {...props}/>)
   }
 
@@ -153,11 +129,27 @@ describe('PersonInformationForm', () => {
     expect(field.props().value).toEqual('example-ssn')
   })
 
+  it('renders errors for the SSN field', () => {
+    const field = renderPersonForm({
+      errors: {ssn: ['this is not correct']},
+    }).find('MaskedInputField[label="Social security number"]')
+    expect(field.exists()).toEqual(true)
+    expect(field.props().errors).toEqual(['this is not correct'])
+  })
+
   it('changing the ssn fires onChange', () => {
     const onChange = jasmine.createSpy('onChange')
     renderPersonForm({onChange})
       .find('MaskedInputField[label="Social security number"]')
       .simulate('change', {target: {value: '111-11-1111'}})
     expect(onChange).toHaveBeenCalledWith('ssn', '111-11-1111')
+  })
+
+  it('blurring the ssn fires onBlur', () => {
+    const onBlur = jasmine.createSpy('onBlur')
+    renderPersonForm({onBlur})
+      .find('MaskedInputField[label="Social security number"]')
+      .simulate('blur')
+    expect(onBlur).toHaveBeenCalledWith('ssn')
   })
 })
