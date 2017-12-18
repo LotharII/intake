@@ -219,8 +219,8 @@ export function mapStateToProps(state, _ownProps) {
     participants: state.get('participants'),
     reference: state.getIn(['screening', 'reference']),
     referralId: state.getIn(['screening', 'referral_id']),
-    hasConstraintValidationErrors: getConstraintValidationErrorsSelector(state).length > 0,
-    submitReferralErrors: getScreeningSubmissionErrorsSelector(state),
+    hasConstraintValidationErrors: Boolean(getConstraintValidationErrorsSelector(state).size),
+    submitReferralErrors: getScreeningSubmissionErrorsSelector(state).toJS(),
   }
 }
 

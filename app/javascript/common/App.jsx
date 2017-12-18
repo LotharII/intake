@@ -3,7 +3,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {
   getHasGenericErrorValueSelector,
-  getPageErrorMessageSelector,
+  getPageErrorMessageValueSelector,
 } from 'selectors/errorsSelectors'
 import {getUserNameSelector} from 'selectors/userInfoSelectors'
 import {fetch as fetchSystemCodesAction} from 'actions/systemCodesActions'
@@ -43,7 +43,7 @@ App.propTypes = {
 const mapStateToProps = (state) => ({
   hasError: getHasGenericErrorValueSelector(state),
   fullName: userNameFormatter(getUserNameSelector(state)),
-  pageErrorMessage: getPageErrorMessageSelector(state),
+  pageErrorMessage: getPageErrorMessageValueSelector(state),
 })
 
 const mapDispatchToProps = (dispatch, _ownProps) => ({

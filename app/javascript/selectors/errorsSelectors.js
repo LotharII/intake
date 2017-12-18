@@ -8,39 +8,34 @@ export const getHasGenericErrorValueSelector = createSelector(
 )
 export const getConstraintValidationErrorsSelector = createSelector(
   getErrors,
-  (errors) => (errors.toIndexedSeq().flatten(true).filter((error) => (error && error.get('type') === 'constraint_validation')).toJS())
+  (errors) => (errors.toIndexedSeq().flatten(true).filter((error) => (error && error.get('type') === 'constraint_validation')).toList())
 )
 export const getScreeningSubmissionErrorsSelector = createSelector(
   getConstraintValidationErrorsSelector,
   (constraintValidationErrors) => (
     constraintValidationErrors.map((error) =>
-      (`${error.property} ${error.user_message} (Incident Id: ${error.incident_id})`))
+      (`${error.get('property')} ${error.get('user_message')} (Incident Id: ${error.get('incident_id')})`))
   )
 )
 export const getSystemErrorsSelector = createSelector(
   getErrors,
-  (errors) => (errors.toIndexedSeq().flatten(true).filter((error) => (error && error.get('type') !== 'constraint_validation')).toJS())
+  (errors) => (errors.toIndexedSeq().flatten(true).filter((error) => (error && error.get('type') !== 'constraint_validation')).toList())
 )
 export const getSystemErrorIncidentIdsSelector = createSelector(
   getSystemErrorsSelector,
-  (systemErrors) => (systemErrors.map((error) => {
-    if (error) {
-      return error.incident_id
-    }
-    return ''
-  }).join(', '))
+  (systemErrors) => (systemErrors.map((error) => (error.get('incident_id'))))
 )
-export const getPageErrorMessageSelector = createSelector(
+export const getPageErrorMessageValueSelector = createSelector(
   getErrors,
   getSystemErrorIncidentIdsSelector,
   getConstraintValidationErrorsSelector,
   (errors, systemErrorIncidentIds, constraintValidationErrors) => {
-    if (constraintValidationErrors.length > 0) {
-      return `${constraintValidationErrors.length} error(s) have been identified. Please fix them and try submitting again.`
+    if (constraintValidationErrors.size) {
+      return `${constraintValidationErrors.size} error(s) have been identified. Please fix them and try submitting again.`
     } else {
       let message = 'Something went wrong, sorry! Please try your last action again.'
-      if (systemErrorIncidentIds) {
-        message += ` (Ref #: ${systemErrorIncidentIds})`
+      if (systemErrorIncidentIds.size) {
+        message += ` (Ref #: ${systemErrorIncidentIds.toJS().join(', ')})`
       }
       return message
     }
