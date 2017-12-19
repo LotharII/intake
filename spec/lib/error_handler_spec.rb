@@ -13,7 +13,23 @@ describe ErrorHandler do
       end
     end
 
-    it 'add isssue_details to response_body' do
+    it 'returns an array of issue details' do
+      foo = Foo.new
+
+      begin
+        raise ApiError,
+          response: OpenStruct.new(
+            status: 500,
+            body: { "issue_details": [1, 2, 3] }.to_json
+          )
+      rescue ApiError => exception
+        issue_details = foo.issue_details(exception)
+      end
+
+      expect(issue_details).not_to be_empty
+    end
+
+    it 'add issue_details to response_body' do
       foo = Foo.new
 
       begin
@@ -37,7 +53,7 @@ describe ErrorHandler do
         raise ApiError, {}
       rescue ApiError => exception
         exception = foo.add_issue_details(exception)
-        incident_ids = foo.get_incident_ids(exception)
+        incident_ids = foo.incident_ids(exception)
       end
 
       expect(incident_ids).not_to be_empty
@@ -79,7 +95,7 @@ describe ErrorHandler do
         raise ApiError,
           response: OpenStruct.new(
             status: 500,
-            body: '{"api_response_body": {"issue_details": ["one", "two", "three"]}}'
+            body: '{"issue_details": ["one", "two", "three"]}'
           ),
           url: '/var/foo',
           method: :post,
@@ -92,7 +108,7 @@ describe ErrorHandler do
                                   status: 500,
                                   message: 'ApiError',
                                   api_response_body: {
-                                    api_response_body: { issue_details: %w[one two three] }
+                                    issue_details: %w[one two three]
                                   },
                                   url: '/var/foo',
                                   method: 'post',

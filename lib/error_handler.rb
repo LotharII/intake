@@ -22,7 +22,7 @@ module ErrorHandler
   end
 
   def add_issue_details(exception)
-    if get_issue_details(exception).empty?
+    if issue_details(exception).empty?
       exception.api_error[:response_body] = generate_isssue_details(exception)
     end
     exception
@@ -39,7 +39,7 @@ module ErrorHandler
     }.as_json
   end
 
-  def get_issue_details(exception)
+  def issue_details(exception)
     if api_response_body(exception.api_error[:response_body]).try(:key?, 'issue_details')
       api_response_body(exception.api_error[:response_body])['issue_details']
     else
@@ -47,8 +47,8 @@ module ErrorHandler
     end
   end
 
-  def get_incident_ids(exception)
-    get_issue_details(exception).collect { |issue_detail| issue_detail['incident_id'] }
+  def incident_ids(exception)
+    issue_details(exception).collect { |issue_detail| issue_detail['incident_id'] }
   end
 
   def generate_api_error(exception)
@@ -82,7 +82,7 @@ module ErrorHandler
 
   def api_error_message(exception, type)
     "[#{type}] found processing an api call:
-    - incident_ids: #{get_incident_ids(exception).join(', ')}}
+    - incident_ids: #{incident_ids(exception).join(', ')}}
     - message: #{exception.message}
     - URL    : #{exception.api_error[:url]}
     - status : #{exception.api_error[:http_code]}
