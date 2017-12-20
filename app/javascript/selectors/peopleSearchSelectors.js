@@ -1,4 +1,7 @@
-import {Map} from 'immutable'
+import {Map, List} from 'immutable'
+import {findByCode} from 'selectors'
+import {createSelector} from 'reselect'
+
 const getPeopleSearchSelector = (state) => state.get('peopleSearch')
 export const getSearchTermValueSelector = (state) => (
   getPeopleSearchSelector(state).get('searchTerm')
@@ -6,6 +9,20 @@ export const getSearchTermValueSelector = (state) => (
 export const getResultsTotalValueSelector = (state) => (
   getPeopleSearchSelector(state).get('total')
 )
+
+export const getResultLanguagesSelector = (state, result) => createSelector(
+  (state) => state.get('languages'),
+  (state) => (result.get('languages') || List()),
+  (statusCodes, languages) => (
+    languages
+      .sort((item) => item.get('primary'))
+      .map((language) => (
+        findByCode(statusCodes.toJS(), language.get('id'))[0].value)
+      )
+
+  )
+)(state)
+
 const formatSSN = (ssn) => ssn && ssn.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')
 export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state)
   .get('results')
@@ -19,7 +36,7 @@ export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state
       nameSuffix: result.get('name_suffix'),
       legacyDescriptor: result.get('legacy_descriptor'),
       gender: result.get('gender'),
-      languages: result.get('languages'),
+      languages: getResultLanguagesSelector(state, result),
       races: result.get('races'),
       ethnicity: result.get('ethnicity'),
       dateOfBirth: result.getIn(['highlight', 'date_of_birth'], result.get('date_of_birth')),
