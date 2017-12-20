@@ -4,5 +4,5 @@ export const findByCategory = (statusCodes = List(), selectedCategory) => (
 )
 
 export const findByCode = (statusCodes, selectedCode) => (
-  statusCodes.filter(({code}) => code === selectedCode)
+  statusCodes.find(({code}) => code === selectedCode) || {}
 )
