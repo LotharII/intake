@@ -6,15 +6,16 @@ import {
 } from 'selectors/peopleSearchSelectors'
 
 describe('peopleSearchSelectors', () => {
-  const languageLovs = [
-    {code: '1',value: 'English'},
-    {code: '2',value: 'French'},
-    {code: '3',value: 'Italian'}
-  ]
 
   beforeEach(() => jasmine.addMatchers(matchers))
 
   describe('getResultLanguagesSelector', () => {
+    const languageLovs = [
+      {code: '1',value: 'English'},
+      {code: '2',value: 'French'},
+      {code: '3',value: 'Italian'}
+    ]
+
     it('maps languages to lov values by id, sorting by primary', () => {
       const result = fromJS({
         languages: [
