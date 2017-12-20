@@ -17,7 +17,7 @@ export const getResultLanguagesSelector = (state, result) => createSelector(
     languages
       .sort((item) => item.get('primary'))
       .map((language) => (
-        findByCode(statusCodes.toJS(), language.get('id'))[0].value)
+        findByCode(statusCodes.toJS(), language.get('id')).value)
       )
 
   )
