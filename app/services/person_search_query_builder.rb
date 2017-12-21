@@ -5,8 +5,13 @@
 class PersonSearchQueryBuilder
   attr_reader :search_term
 
+
   def initialize(search_term = '')
-    @search_term = search_term.downcase.delete('/')
+    new_search = search_term.split(" ").map do |n|
+      n.to_i != 0 ? n.gsub(/[^0-9A-Za-z]/, '') : n.gsub(/[^0-9A-Za-z]/, ' ')
+    end
+    puts new_search
+    @search_term = new_search.join(' ').downcase.delete('/')
   end
 
   def build
