@@ -1,5 +1,5 @@
 import {Map, List} from 'immutable'
-import {findByCode} from 'selectors'
+import {findByCode, findByCategory} from 'selectors'
 import {createSelector} from 'reselect'
 
 const getPeopleSearchSelector = (state) => state.get('peopleSearch')
@@ -23,6 +23,36 @@ export const getResultLanguagesSelector = (state, result) => createSelector(
   )
 )(state)
 
+export const getResultRacesSelector = (state, result) => createSelector(
+  (state) => state.get('ethnicityTypes'),
+  (state) => (result.get('races') || List()),
+  (state) => result.get('unable_to_determine_code'),
+  (ethnicityTypes, races, unableToDetermineCode) => {
+    if(!unableToDetermineCode || unableToDetermineCode === '')
+      return races
+        .map((race) => (Map({
+          race: findByCategory(ethnicityTypes.toJS(), `race_${race.get('description')}`),
+          race_detail: findByCode(ethnicityTypes.toJS(), race.get('id')).value
+        })))
+    else if(unableToDetermineCode === 'A')
+      return List(['Abandoned'])
+    else
+      return List(['Unknown'])
+  }
+)(state)
+
+export const getResultEthnicitiesSelector = (state, result) => createSelector(
+  (state) => state.get('ethnicityTypes'),
+  (state) => (result.get('ethnicity') || List()),
+  (statusCodes, ethnicity) => (
+    ethnicity
+      .map((entry) => (
+        findByCode(statusCodes.toJS(), entry.get('id')).value)
+      )
+
+  )
+)(state)
+
 const formatSSN = (ssn) => ssn && ssn.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')
 export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state)
   .get('results')
@@ -37,7 +67,7 @@ export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state
       legacyDescriptor: result.get('legacy_descriptor'),
       gender: result.get('gender'),
       languages: getResultLanguagesSelector(state, result),
-      races: result.get('races'),
+      races: getResultRacesSelector(state, result),
       ethnicity: result.get('ethnicity'),
       dateOfBirth: result.getIn(['highlight', 'date_of_birth'], result.get('date_of_birth')),
       ssn: formatSSN(result.getIn(['highlight', 'ssn'], result.get('ssn'))),

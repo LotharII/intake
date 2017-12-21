@@ -2,7 +2,8 @@ import * as matchers from 'jasmine-immutable-matchers'
 import {fromJS, Map} from 'immutable'
 import {
   getPeopleResultsSelector,
-  getResultLanguagesSelector
+  getResultLanguagesSelector,
+  getResultRacesSelector
 } from 'selectors/peopleSearchSelectors'
 
 describe('peopleSearchSelectors', () => {
@@ -28,6 +29,75 @@ describe('peopleSearchSelectors', () => {
       expect(languageResult).toEqualImmutable(
         fromJS(['French', 'English', 'Italian'])
       )
+    })
+  })
+
+  describe('getResultRacesSelector', () => {
+    const ethnicityTypeLovs = [
+      {code: '1',value: 'European'},
+      {code: '2',value: 'French'},
+      {code: '3',value: 'Romanian'}
+    ]
+
+    it('maps races to lov values by id', () => {
+      const result = fromJS({
+        races: [
+          {id: '3'},
+          {id: '2'},
+          {id: '1'}],
+      })
+      const state = fromJS({ ethnicityTypes: ethnicityTypeLovs})
+      const racesResult = getResultRacesSelector(state, result)
+      expect(racesResult).toEqualImmutable(
+        fromJS(['Romanian', 'French', 'European'])
+      )
+    })
+
+    it('maps races to "Abandoned" if unableToDetermineCode is "A"', () => {
+      const result = fromJS({
+        races: [{id: '3'}],
+        unable_to_determine_code: 'A'
+      })
+      const state = fromJS({ ethnicityTypes: ethnicityTypeLovs})
+      debugger
+      const racesResult = getResultRacesSelector(state, result)
+      expect(racesResult).toEqualImmutable(
+        fromJS(['Abandoned'])
+      )
+    })
+
+    it('maps races to "Unknown" if unableToDetermineCode is "I"', () => {
+      const result = fromJS({
+        races: [{id: '3'}],
+        unable_to_determine_code: 'I'
+      })
+      const state = fromJS({ ethnicityTypes: ethnicityTypeLovs})
+      debugger
+      const racesResult = getResultRacesSelector(state, result)
+      expect(racesResult).toEqualImmutable(
+        fromJS(['Unknown'])
+      )
+    })
+
+    it('maps races to "Unknown" if unableToDetermineCode is "K"', () => {
+      const result = fromJS({
+        races: [{id: '3'}],
+        unable_to_determine_code: 'K'
+      })
+      const state = fromJS({ ethnicityTypes: ethnicityTypeLovs})
+      debugger
+      const racesResult = getResultRacesSelector(state, result)
+      expect(racesResult).toEqualImmutable(
+        fromJS(['Unknown'])
+      )
+    })
+  })
+
+  describe('getResultEthnicitiesSelector', () => {
+    it('maps hispanic codes to lov values', () => {
+    })
+
+    it('maps hispanic latino origin to the correct values', () => {
     })
   })
 

@@ -30,7 +30,6 @@ class PersonSearchRepository
         PeopleSearchResultsInterpreter.interpret_sensitivity_indicator(document)
         PeopleSearchResultsInterpreter.interpret_addresses(document)
         PeopleSearchResultsInterpreter.interpret_highlights(document)
-        PeopleSearchResultsInterpreter.interpret_race_ethnicity(document)
         PeopleSearchResultsInterpreter.interpret_ssn(document)
         PeopleSearchResultsInterpreter.interpret_legacy_id(document)
         document['_source']
