@@ -56,6 +56,24 @@ export const getResultEthnicitiesSelector = (state, result) => createSelector(
   )
 )(state)
 
+export const getResultAddressSelector = (state, result) => createSelector(
+  (state) => state.get('usStates'),
+  (state) => result.getIn(['addresses', 0, 'city']),
+  (state) => result.getIn(['addresses', 0, 'state_code']),
+  (state) => result.getIn(['addresses', 0, 'zip']),
+  (state) => result.getIn(['addresses', 0, 'street_number']),
+  (state) => result.getIn(['addresses', 0, 'street_name']),
+  (statusCodes, city, stateCode, zip, streetNumber, streetName) =>(
+    Map({
+      city: city,
+      state: stateCode,
+      zip: zip,
+      type: '', // TODO: Implement as part of #INT-537
+      street_address: `${streetNumber} ${streetName}`,
+    })
+  )
+)(state)
+
 const formatSSN = (ssn) => ssn && ssn.replace(/(\d{3})(\d{2})(\d{4})/, '$1-$2-$3')
 export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state)
   .get('results')
@@ -74,13 +92,7 @@ export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state
       ethnicity: result.get('ethnicity'),
       dateOfBirth: result.getIn(['highlight', 'date_of_birth'], result.get('date_of_birth')),
       ssn: formatSSN(result.getIn(['highlight', 'ssn'], result.get('ssn'))),
-      address: address && Map({
-        city: address.get('city'),
-        state: address.get('state'),
-        streetAddress: address.get('street_address'),
-        type: '', // TODO: Implement as part of #INT-537
-        zip: address.get('zip'),
-      }),
+      address: getResultAddressSelector(state, result),
       phoneNumber: phoneNumber && Map({
         number: phoneNumber.get('number'),
         type: phoneNumber.get('type'),

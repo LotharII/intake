@@ -5,7 +5,8 @@ import {
   getResultLanguagesSelector,
   getResultRacesSelector,
   getIsSensitiveSelector,
-  getIsSealedSelector
+  getIsSealedSelector,
+  getResultAddressSelector
 } from 'selectors/peopleSearchSelectors'
 
 describe('peopleSearchSelectors', () => {
@@ -67,6 +68,35 @@ describe('peopleSearchSelectors', () => {
       })
       const sensitiveResult = getIsSealedSelector(result)
       expect(sensitiveResult).toEqual(false)
+    })
+  })
+
+  fdescribe('getResultAddressSelector', () => {
+    const usStates = [
+      { id: '1' , value: 'state'}
+    ]
+
+    it('returns the city, state, zip, empty type, and a joined street address', () => {
+      const result = fromJS({
+        addresses: [{
+          city: 'city',
+          state_code: 'CA',
+          zip: 'zip',
+          type: 'blah',
+          street_number: '123',
+          street_name: 'C Street',
+
+        }]
+      })
+      const state = fromJS(usStates)
+      const addressResult = getResultAddressSelector(state, result)
+      expect(addressResult).toEqualImmutable(fromJS({
+        city: 'city',
+        state: 'CA',
+        zip: 'zip',
+        type: '',
+        street_address: '123 C Street'
+      }))
     })
   })
 
