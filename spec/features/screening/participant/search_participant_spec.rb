@@ -145,6 +145,32 @@ feature 'searching a participant in autocompleter' do
       end
     end
 
+    scenario 'search result contains person information' do
+      built_response = build_response_from_person(person)
+      stub_person_search('Ma', built_response)
+
+      within '#search-card', text: 'Search' do
+        fill_in_autocompleter 'Search for any person', with: 'Ma'
+      end
+
+      within 'li', text: 'Marge Jacqueline Simpson MD' do
+        expect(page).to have_content date_of_birth.strftime('%-m/%-d/%Y')
+        expect(page).to have_content '15 yrs old'
+        expect(page).to have_content 'Female, White, American Indian or Alaska Native'
+        expect(page).to have_content 'Hispanic/Latino'
+        expect(page).to have_content 'Language'
+        expect(page).to have_content 'French (Primary), Italian'
+        expect(page).to have_content 'Home'
+        expect(page).to have_content '971-287-6774'
+        expect(page).to have_content 'SSN'
+        expect(page).to have_content '1234'
+        expect(page).to have_content '123-23-1234'
+        expect(page).to have_content '123 Fake St, Springfield, NY 12345'
+        expect(page).to have_content 'Sensitive'
+        expect(page).to_not have_content 'Sealed'
+      end
+    end
+
     scenario 'search results format the SSN' do
       marge = FactoryGirl.create(
         :person_search,
@@ -152,6 +178,26 @@ feature 'searching a participant in autocompleter' do
         addresses: [address],
         legacy_descriptor: FactoryGirl.create(:legacy_descriptor),
         ssn: '123456789'
+      )
+      built_response = build_response_from_person(marge)
+      stub_person_search('Ma', built_response)
+
+      within '#search-card', text: 'Search' do
+        fill_in_autocompleter 'Search for any person', with: 'Ma'
+      end
+
+      within '.react-autosuggest__suggestions-list' do
+        expect(page).to have_content '123-45-6789'
+      end
+    end
+
+    scenario 'search results format the SSN with dashes' do
+      marge = FactoryGirl.create(
+          :person_search,
+          # first_name: 'Marge',
+          # addresses: [address],
+          # legacy_descriptor: FactoryGirl.create(:legacy_descriptor),
+          ssn: '123-456-789'
       )
       built_response = build_response_from_person(marge)
       stub_person_search('Ma', built_response)
