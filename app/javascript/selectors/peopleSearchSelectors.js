@@ -81,6 +81,7 @@ export const getPeopleResultsSelector = (state) => getPeopleSearchSelector(state
     const address = result.getIn(['addresses', 0], null)
     const phoneNumber = result.getIn(['phone_numbers', 0], null)
     return Map({
+      legacy_id: result.get('id'),
       firstName: result.getIn(['highlight', 'first_name'], result.get('first_name')),
       lastName: result.getIn(['highlight', 'last_name'], result.get('last_name')),
       middleName: result.get('middle_name'),
