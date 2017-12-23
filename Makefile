@@ -52,6 +52,8 @@ release:
 	${INFO} "Pulling latest images..."
 	@ docker-compose $(RELEASE_ARGS) pull &
 	${INFO} "Building images..."
+	@ echo "Build_date, build_number, version, vcs_ref"
+	@ echo $$BUILD_DATE $$BUILD_NUMBER $$VERSION $$VCS_REF
 	@ docker-compose $(RELEASE_ARGS) build --build-arg BUILD_DATE=$$BUILD_DATE --build-arg BUILD_NUMBER=$$BUILD_NUMBER --build-arg VERSION=$$VERSION --build-arg VCS_REF=$$VCS_REF app &
 	@ docker-compose $(RELEASE_ARGS) build --pull nginx &
 	@ wait
