@@ -31,11 +31,11 @@ node('Slave') {
             VERSION = sh(
                 script: 'git describe --tags $(git rev-list --tags --max-count=1)',
                 returnStatus: true
-            ).trim()
+            )
             VCS_REF = sh(
                 script: 'git rev-parse --short HEAD',
                 returnStatus: true
-            ).trim()
+            )
 
             stage('Build') {
                 curStage = 'Build'
