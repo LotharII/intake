@@ -8,7 +8,7 @@ node('Slave') {
     def pipelineStatus = 'SUCCESS'
     def successColor = '11AB1B'
     def failureColor = '#FF0000'
-    SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+    SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     def buildDate = dateFormatGmt.format(new Date())
 
     dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
