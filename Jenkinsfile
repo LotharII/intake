@@ -11,7 +11,7 @@ node('Slave') {
     SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     def buildDate = dateFormatGmt.format(new Date())
 
-    dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+    /* dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT")); */
 
     try {
         emailList = EMAIL_NOTIFICATION_LIST
