@@ -52,6 +52,8 @@ release:
 	${INFO} "Pulling latest images..."
 	@ docker-compose $(RELEASE_ARGS) pull &
 	${INFO} "Building images..."
+	@ echo "BUILD_ARGS"
+	@ echo ${BUILD_ARGS}
 	@ docker-compose $(RELEASE_ARGS) build ${BUILD_ARGS} app &
 	@ docker-compose $(RELEASE_ARGS) build --pull nginx &
 	@ wait
