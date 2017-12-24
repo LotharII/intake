@@ -30,11 +30,11 @@ node('Slave') {
             int buildNumber = (BUILD_NUMBER.toInteger() - offset).toString()
             VERSION = sh(
                 script: 'git describe --tags $(git rev-list --tags --max-count=1)',
-                returnStatus: true
+                returnStdout: true
             )
             VCS_REF = sh(
                 script: 'git rev-parse --short HEAD',
-                returnStatus: true
+                returnStdout: true
             )
 
             stage('Build') {
