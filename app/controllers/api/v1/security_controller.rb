@@ -21,6 +21,10 @@ module Api
 
       private
 
+      def fake_method
+        # Do nothing
+      end
+
       def permissions_set?(permission)
         permission.blank? ||
           session[:user_details].blank? ||
