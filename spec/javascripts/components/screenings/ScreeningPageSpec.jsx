@@ -22,7 +22,7 @@ describe('ScreeningPage', () => {
     participants = List(),
     reference,
     referralId,
-    hasErrors = false,
+    hasConstraintValidationErrors = false,
     submitReferralErrors = [],
   }) {
     const props = {
@@ -34,7 +34,7 @@ describe('ScreeningPage', () => {
       participants,
       reference,
       referralId,
-      hasErrors,
+      hasConstraintValidationErrors,
       submitReferralErrors,
     }
     return shallow(<ScreeningPage {...props} />)
@@ -132,7 +132,7 @@ describe('ScreeningPage', () => {
           loaded: true,
           mode: 'edit',
           submitReferralErrors,
-          hasErrors: true,
+          hasConstraintValidationErrors: true,
         })
         const card = component.find('ErrorDetail')
         expect(card.exists()).toEqual(true)
@@ -146,7 +146,7 @@ describe('ScreeningPage', () => {
           loaded: true,
           mode: 'edit',
           submitReferralErrors,
-          hasErrors: false,
+          hasConstraintValidationErrors: false,
         })
         const card = component.find('ErrorDetail')
         expect(card.exists()).toEqual(false)

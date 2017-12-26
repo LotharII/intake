@@ -3,7 +3,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {
   getHasGenericErrorValueSelector,
-  getTotalScreeningSubmissionErrorValueSelector,
+  getPageErrorMessageSelector,
 } from 'selectors/errorsSelectors'
 import {getUserNameSelector} from 'selectors/userInfoSelectors'
 import {fetch as fetchSystemCodesAction} from 'actions/systemCodesActions'
@@ -20,11 +20,11 @@ export class App extends React.Component {
   }
 
   render() {
-    const {errorCount, hasError, fullName} = this.props
+    const {hasError, fullName, pageErrorMessage} = this.props
     return (
       <div>
         <GlobalHeader profileName={fullName} />
-        {(hasError) && <PageError errorCount={errorCount} />}
+        {(hasError) && <PageError pageErrorMessage={pageErrorMessage} />}
         <div className='container'>
           {this.props.children}
         </div>
@@ -36,14 +36,14 @@ export class App extends React.Component {
 App.propTypes = {
   actions: PropTypes.object.isRequired,
   children: PropTypes.object.isRequired,
-  errorCount: PropTypes.number,
   fullName: PropTypes.string,
   hasError: PropTypes.bool,
+  pageErrorMessage: PropTypes.string,
 }
 const mapStateToProps = (state) => ({
-  errorCount: getTotalScreeningSubmissionErrorValueSelector(state),
-  hasError: getHasGenericErrorValueSelector(state) || Boolean(getTotalScreeningSubmissionErrorValueSelector(state)),
+  hasError: getHasGenericErrorValueSelector(state),
   fullName: userNameFormatter(getUserNameSelector(state)),
+  pageErrorMessage: getPageErrorMessageSelector(state),
 })
 
 const mapDispatchToProps = (dispatch, _ownProps) => ({

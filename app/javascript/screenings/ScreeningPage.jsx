@@ -32,7 +32,7 @@ import CrossReportFormContainer from 'containers/screenings/CrossReportFormConta
 import CrossReportShowContainer from 'containers/screenings/CrossReportShowContainer'
 import DecisionFormContainer from 'containers/screenings/DecisionFormContainer'
 import DecisionShowContainer from 'containers/screenings/DecisionShowContainer'
-import {getScreeningSubmissionErrorsSelector, getTotalScreeningSubmissionErrorValueSelector} from 'selectors/errorsSelectors'
+import {getScreeningSubmissionErrorsSelector, getConstraintValidationErrorsSelector} from 'selectors/errorsSelectors'
 import {getAllCardsAreSavedValueSelector, getScreeningHasErrorsSelector} from 'selectors/screening/screeningPageSelectors'
 
 export class ScreeningPage extends React.Component {
@@ -59,7 +59,7 @@ export class ScreeningPage extends React.Component {
   }
 
   render() {
-    const {referralId, reference, editable, mode, loaded, hasErrors, submitReferralErrors} = this.props
+    const {referralId, reference, editable, mode, loaded, hasConstraintValidationErrors, submitReferralErrors} = this.props
     const releaseTwoInactive = IntakeConfig.isFeatureInactive('release_two')
     const releaseTwo = IntakeConfig.isFeatureActive('release_two')
 
@@ -92,7 +92,7 @@ export class ScreeningPage extends React.Component {
                 </div>
               </div>
           }
-          {releaseTwoInactive && hasErrors && <ErrorDetail errors={submitReferralErrors} />}
+          {releaseTwoInactive && hasConstraintValidationErrors && <ErrorDetail errors={submitReferralErrors} />}
           {releaseTwoInactive &&
             <CardContainer
               title='Screening Information'
@@ -194,7 +194,7 @@ ScreeningPage.propTypes = {
   disableSubmitButton: PropTypes.bool,
   editable: PropTypes.bool,
   hasAddSensitivePerson: PropTypes.bool,
-  hasErrors: PropTypes.bool,
+  hasConstraintValidationErrors: PropTypes.bool,
   loaded: PropTypes.bool,
   mode: PropTypes.string.isRequired,
   params: PropTypes.object.isRequired,
@@ -219,8 +219,8 @@ export function mapStateToProps(state, _ownProps) {
     participants: state.get('participants'),
     reference: state.getIn(['screening', 'reference']),
     referralId: state.getIn(['screening', 'referral_id']),
-    hasErrors: Boolean(getTotalScreeningSubmissionErrorValueSelector(state)),
-    submitReferralErrors: getScreeningSubmissionErrorsSelector(state).toJS(),
+    hasConstraintValidationErrors: getConstraintValidationErrorsSelector(state).length > 0,
+    submitReferralErrors: getScreeningSubmissionErrorsSelector(state),
   }
 }
 

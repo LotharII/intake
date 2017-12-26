@@ -30,21 +30,16 @@ describe('App', () => {
 
   describe('error banner', () => {
     it('is not rendered when no errors', () => {
-      const component = renderApp({hasError: false, errorCount: 0})
+      const component = renderApp({hasError: false})
       expect(component.find('PageError').exists()).toEqual(false)
     })
-    describe('generic errors', () => {
-      it('is rendered when generic error occurs', () => {
-        const component = renderApp({hasError: true})
-        expect(component.find('PageError').exists()).toEqual(true)
-      })
+    it('is rendered when generic error occurs', () => {
+      const component = renderApp({hasError: true})
+      expect(component.find('PageError').exists()).toEqual(true)
     })
-    describe('countable errors', () => {
-      it('is rendered when errors count is passed', () => {
-        const component = renderApp({hasError: true, errorCount: 15})
-        expect(component.find('PageError').exists()).toEqual(true)
-        expect(component.find('PageError').props().errorCount).toEqual(15)
-      })
+    it('is rendered when pageErrorMessage exists', () => {
+      const component = renderApp({hasError: true, pageErrorMessage: 'pageErrorMessage'})
+      expect(component.find('PageError').exists()).toEqual(true)
     })
   })
 })
