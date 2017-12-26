@@ -2,7 +2,7 @@ import {fromJS} from 'immutable'
 import {
   getHasGenericErrorValueSelector,
   getScreeningSubmissionErrorsSelector,
-  getConstraintValidationErrorsSelector,
+  getApiValidationErrorsSelector,
   getSystemErrorsSelector,
   getSystemErrorIncidentIdsSelector,
   getPageErrorMessageValueSelector,
@@ -56,10 +56,10 @@ describe('errorsSelectors', () => {
       ]}
       const state = fromJS({errors})
       expect(getScreeningSubmissionErrorsSelector(state)).toEqualImmutable(fromJS([
-        'incidentCounty.GVR_ENTC GVR_ENTC sys code is required (Incident Id: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
-        'participants must contain at least one victim, only one reporter, and ... (Incident Id: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
-        'id must be greater than or equal to 1 (Incident Id: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
-        'responseTime may not be null (Incident Id: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
+        'incidentCounty.GVR_ENTC GVR_ENTC sys code is required (Ref #: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
+        'participants must contain at least one victim, only one reporter, and ... (Ref #: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
+        'id must be greater than or equal to 1 (Ref #: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
+        'responseTime may not be null (Ref #: 0de2aea9-04f9-4fc4-bc16-75b6495839e0)',
       ]))
     })
     it('returns 0 when no screening submission errors exist', () => {
@@ -67,7 +67,7 @@ describe('errorsSelectors', () => {
       expect(getScreeningSubmissionErrorsSelector(state)).toEqualImmutable(fromJS([]))
     })
   })
-  describe('getConstraintValidationErrorsSelector', () => {
+  describe('getApiValidationErrorsSelector', () => {
     it('returns errors with type equal to "constraint_validation"', () => {
       const errors = {[SUBMIT_SCREENING_COMPLETE]: [
         {
@@ -88,7 +88,7 @@ describe('errorsSelectors', () => {
         },
       ]}
       const state = fromJS({errors})
-      expect(getConstraintValidationErrorsSelector(state)).toEqualImmutable(fromJS([
+      expect(getApiValidationErrorsSelector(state)).toEqualImmutable(fromJS([
         {
           incident_id: '3',
           type: 'constraint_validation',
@@ -158,7 +158,7 @@ describe('errorsSelectors', () => {
     })
   })
   describe('getPageErrorMessageSelector', () => {
-    it('returns constraintValidationErrors if it exists', () => {
+    it('returns apiValidationErrors if it exists', () => {
       const errors = {[SUBMIT_SCREENING_COMPLETE]: [
         {
           incident_id: '1',
@@ -180,7 +180,7 @@ describe('errorsSelectors', () => {
       const state = fromJS({errors})
       expect(getPageErrorMessageValueSelector(state)).toEqual('2 error(s) have been identified. Please fix them and try submitting again.')
     })
-    it('returns a system error with incident ids if systemErrorIncidentIds exists and constraintValidationErrors is null', () => {
+    it('returns a system error with incident ids if systemErrorIncidentIds exists and apiValidationErrors is null', () => {
       const errors = {[SUBMIT_SCREENING_COMPLETE]: [
         {
           incident_id: '1',

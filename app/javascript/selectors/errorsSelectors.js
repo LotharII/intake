@@ -6,15 +6,15 @@ export const getHasGenericErrorValueSelector = createSelector(
   getErrors,
   (errors) => (errors.size > 0)
 )
-export const getConstraintValidationErrorsSelector = createSelector(
+export const getApiValidationErrorsSelector = createSelector(
   getErrors,
   (errors) => (errors.toIndexedSeq().flatten(true).filter((error) => (error && error.get('type') === 'constraint_validation')).toList())
 )
 export const getScreeningSubmissionErrorsSelector = createSelector(
-  getConstraintValidationErrorsSelector,
-  (constraintValidationErrors) => (
-    constraintValidationErrors.map((error) =>
-      (`${error.get('property')} ${error.get('user_message')} (Incident Id: ${error.get('incident_id')})`))
+  getApiValidationErrorsSelector,
+  (apiValidationErrors) => (
+    apiValidationErrors.map((error) =>
+      (`${error.get('property')} ${error.get('user_message')} (Ref #: ${error.get('incident_id')})`))
   )
 )
 export const getSystemErrorsSelector = createSelector(
@@ -28,10 +28,10 @@ export const getSystemErrorIncidentIdsSelector = createSelector(
 export const getPageErrorMessageValueSelector = createSelector(
   getErrors,
   getSystemErrorIncidentIdsSelector,
-  getConstraintValidationErrorsSelector,
-  (errors, systemErrorIncidentIds, constraintValidationErrors) => {
-    if (constraintValidationErrors.size) {
-      return `${constraintValidationErrors.size} error(s) have been identified. Please fix them and try submitting again.`
+  getApiValidationErrorsSelector,
+  (errors, systemErrorIncidentIds, apiValidationErrors) => {
+    if (apiValidationErrors.size) {
+      return `${apiValidationErrors.size} error(s) have been identified. Please fix them and try submitting again.`
     } else {
       let message = 'Something went wrong, sorry! Please try your last action again.'
       if (systemErrorIncidentIds.size) {
